@@ -1,0 +1,39 @@
+def lecturaDistribucion():
+	archivo = raw_input("Ingrese nombre archivo")
+	f = open(archivo, 'r')
+	#print f.readline()
+	i = 0
+	arreglo = []
+	tamano = f.readline()
+	arreglo.append(tamano)
+	print "El tamano es: ", tamano
+	for line in f:
+		for s in line.split(' '):
+			if s == "":
+				pass
+			elif s == "\n":
+				pass
+			else:
+				num = s
+				arreglo.append(num)
+
+	print len(arreglo)
+	return arreglo
+
+def makeAmove(sol):
+	largo = len(sol.solution)
+	posicionUno = randint(0,largo-1)
+	posicionDos = randint(0,largo-1)
+	while posicionUno == posicionDos:
+		posicionDos = randint(0,largo-1)
+	print "posiciones: ", 
+	print posicionUno, 
+	print posicionDos
+	elementoPosUno = sol.solution[posicionUno]
+	elementoPosDos = sol.solution[posicionDos]
+	a, b = sol.solution.index(elementoPosUno), sol.solution.index(elementoPosDos)
+	sol.solution[b], sol.solution[a] = sol.solution[a], sol.solution[b]
+	#solucionAux[posicionUno] = elementoPosDos	
+	#solucionAux[posicionDos] = elementoPosUno
+	print "solucion con cambio: ",
+	print sol.solution

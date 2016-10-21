@@ -3,10 +3,11 @@ import math
 import time, sys, random
 from random import randint
 
-global matrixDistancia, matrixFlujoUno, matrixFlujoDos
+global matrixDistancia, matrixFlujoUno, matrixFlujoDos, matrixFronteras
 matrixDistancia = []
 matrixFlujoUno = []
 matrixFlujoDos = []
+matrixFronteras = []
 
 
 class Solucion:
@@ -147,6 +148,7 @@ def fastNonDominatedSort(poblacion):
 		if p.numSolDominantes == 0:
 			p.rank = 1
 			fronteras.append(p)
+	matrixFronteras.append(fronteras)		
 	i = 1
 	while len(fronteras) != 0:
 		nextFront = []
@@ -158,21 +160,47 @@ def fastNonDominatedSort(poblacion):
 						nextFront.append(solQ)
 		i +=1
 		fronteras = nextFront
+		matrixFronteras.append(fronteras)
 	return poblacion		
 
-def crowdingDistanceAssignment(P):
+def crowdingDistanceAssignment(L):
 	print "Crowded Distance Assignment"
+	l = len(L)
+	for i in L:
+		L.crowdedDistance = 0
+	for x in range(1,):
+		pass
 
+def sortRanking(poblacion):
+	for i in range(len(poblacion)-1, -1,-1):
+		for j in range(1,i+1):
+			s1 = poblacion[j-1]
+			s2 = poblacion[j]
+			if s1.rank > s2. rank:
+				poblacion[j-1] = s2
+				poblacion[j] = s1
 
+def sortCostoAssignacion(poblacion, objetivo):
+	for i in range(len(poblacion)-1,-1,-1):
+		for j in range(1,i+1):
+			s1 = poblacion[j-1]
+			s2 = poblacion[j]
+			if objetivo ==1:
+				if s1.costoFlujo1 > s2.costoFlujo1:
+					poblacion[j-1] = s2
+					poblacion[j] = s1
+			elif objetivo ==2:
+				if s1.costoFlujo2 > s2.costoFlujo2:
+					poblacion[j-1] = s2
+					poblacion[j] = s1
+
+		
 
 def onePointCrossover(sol,other):
 	print "One Point Crossover beggining"
 	child, posRestringidas, posLibres, objPendiente  = [], [], [], []
 	rangoA,rangoB = randint(0, numFac-1), randint(2, numFac-2)
 	rangoC = rangoA+rangoB
-	#print "rA: ", rangoA,
-	#print "rB: ", rangoB,
-	#print "rC: ", rangoC
 	for x in range(rangoA,rangoC):
 		indice = x%numFac
 		elemento = sol.solution[indice]
@@ -181,7 +209,6 @@ def onePointCrossover(sol,other):
 	for x in range(len(sol.solution)):
 		if x not in posRestringidas:
 			posLibres.append(x)
-	#print "pos libres: ", posLibres
 	for x in range(numFac):
 		elem = other.solution[x]
 		if elem in child:
@@ -192,14 +219,11 @@ def onePointCrossover(sol,other):
 	for x in posLibres:
 		child.insert(x,objPendiente[cont])
 		cont +=1
-	print "child: ", 
-	print child
+	#print "child: ", 
+	#print child
 	print "One Point Crossover Finished"
 	return child
 
-#YO DEL FUTURO:
-# ACABO DE TERMINAR EL CROSSOVER CON CICLO CIRCULAR, ME COSTO PERO SALIO AHORAM E DUELE LA CALETA LA CABEZA, MAÑANA SEGUIRÉ
-#AHROA QUEDA REALIZAR EL ND-SORTING PARA LAS POBLACIOJNES GENERADA... VAMSO A TERMIANR ESTE ALGORITMO DE MIERDA LUEGO!!!
 
 def twOptSearch(sol):
 	posicionUno = randint(0,numFac-1)
@@ -221,9 +245,9 @@ def main():
 	distribuirMatrices(lectura())
 	P = []
 	start = time.time()
-	crearPoblacion(P, 5)
+	crearPoblacion(P, 40)
 	for elem in P:
-		print elem.solution
+		#print elem.solution
 		elem.costoAsignacion()
 
 		
@@ -239,16 +263,31 @@ def main():
 	#onePointCrossover(P[0],P[1])
 	#onePcrossover(P[0],P[1])
 	fastNonDominatedSort(P)
+	sortRanking(P)
+	#sortCostoAssignacion(P,1)
 	for elem in P:
+		#print elem.costoFlujo1,
+		#print elem.costoFlujo2,
+		print elem.solution,
+		print elem.rank
+
 		#for other in P:
 		#	dominance(elem, other)
-		print elem.rank
-		pass
+		#print elem.rank
+		#pass
 		#elem.dominancia(P[cont], P[cont+1])
 		#print elem.solution
 		#elem.costoAsignacion()
 		#twOptSearch(elem)
 	end = time.time()
+	cont = 1
+	for x in matrixFronteras:
+		print "Frontera: ",
+		print cont
+		for y in x:
+			print y.solution
+		cont+=1	
+
 	print "t = ", end-start
 
 if __name__ == '__main__':

@@ -14,40 +14,41 @@ class Solucion:
 
 	def __init__(self, numFacilities):
 		self.numObjetos = numFac
+		#self.numObjetivos = 2
+		self.costoFlujo = []
+		for _ in range(1,3):
+			self.costoFlujo.append(None) 
 		self.solution = []
-		self.costoFlujo1 = 0.0
-		self.costoFlujo2 = 0.0
 		self.rank = 10000
 		self.numSolDominantes = 0
 		self.setSolDominadas = []
 		self.crowdedDistance = 0.0
 
 	def costoAsignacion(self):
-		self.costoFlujo1 = 0.0
-		self.costoFlujo2 = 0.0
+		self.costoFlujo[0] = 0.0
+		self.costoFlujo[1]= 0.0
 		for i in range(numFac):
 			for j in range(numFac):
-				self.costoFlujo1 = self.costoFlujo1 + matrixFlujoUno[i*(numFac)+j]*matrixDistancia[self.solution[i]*(numFac)+self.solution[j]]
-				self.costoFlujo2 = self.costoFlujo2 + matrixFlujoDos[i*(numFac)+j]*matrixDistancia[self.solution[i]*(numFac)+self.solution[j]]
-		print "Costo F1: ", self.costoFlujo1
-		print "Costo F2: ", self.costoFlujo2
+				self.costoFlujo[0] = self.costoFlujo[0] + matrixFlujoUno[i*(numFac)+j]*matrixDistancia[self.solution[i]*(numFac)+self.solution[j]]
+				self.costoFlujo[1] = self.costoFlujo[1] + matrixFlujoDos[i*(numFac)+j]*matrixDistancia[self.solution[i]*(numFac)+self.solution[j]]
+		print "Costo F1: ", self.costoFlujo[0]
+		print "Costo F2: ", self.costoFlujo[1]
 
 #LECTURA DE INSTANCIAS DEL PROBLEMA
 def lectura():
 	#archivo = raw_input("Ingrese nombre archivo: ")
-	f = open('10.dat', 'r')
-	i = 0
+	instancias = open('10.dat', 'r')
 	arreglo = []
-	tamano = f.readline()
+	tamano = instancias.readline()
 	arreglo.append(tamano)
-	for line in f:
-		for s in line.split(' '):
-			if s == "":
+	for line in instancias:
+		for caract in line.split(' '):
+			if caract == "":
 				pass
-			elif s == "\n":
+			elif caract == "\n":
 				pass
 			else:
-				num = s
+				num = caract
 				arreglo.append(int(num))
 	return arreglo
 
@@ -110,10 +111,10 @@ def crearPoblacion(poblacion, tamPoblacion):
 	return poblacion
 
 def dominance(sol, otherSol):
-	sF1 = sol.costoFlujo1
-	sF2 = sol.costoFlujo2
-	oF1 = otherSol.costoFlujo1
-	oF2 = otherSol.costoFlujo2
+	sF1 = sol.costoFlujo[0]
+	sF2 = sol.costoFlujo[1]
+	oF1 = otherSol.costoFlujo[0]
+	oF2 = otherSol.costoFlujo[1]
 	a,b = sF1 < oF1, sF2 < oF2
 	c,d = sF1 <= oF1, sF2 <= oF2
 	if (c and d) and (a or b):
@@ -124,10 +125,10 @@ def dominance(sol, otherSol):
 		return False
 
 def strongDominance(sol, otherSol):
-	sF1 = sol.costoFlujo1
-	sF2 = sol.costoFlujo2
-	oF1 = otherSol.costoFlujo1
-	oF2 = otherSol.costoFlujo2
+	sF1 = sol.costoFlujo[0]
+	sF2 = sol.costoFlujo[1]
+	oF1 = otherSol.costoFlujo[0]
+	oF2 = otherSol.costoFlujo[1]
 	a,b = sF1 < oF1, sF2 < oF2
 	if(a and b):
 		return True
@@ -137,39 +138,49 @@ def strongDominance(sol, otherSol):
 
 def fastNonDominatedSort(poblacion):
 	fronteras = []
-	for p in poblacion:
-		for q in poblacion:
-			if p == q:
+	for solP in poblacion:
+		for solQ in poblacion:
+			if solP == solQ:
 				continue
-			if dominance(p,q):
-				p.setSolDominadas.append(q)
-			elif dominance(q,p):
-				p.numSolDominantes += 1
-		if p.numSolDominantes == 0:
-			p.rank = 1
-			fronteras.append(p)
+			if dominance(solP,solQ):
+				solP.setSolDominadas.append(solQ)
+			elif dominance(solQ,solP):
+				solP.numSolDominantes += 1
+		if solP.numSolDominantes == 0:
+			solP.rank = 1
+			fronteras.append(solP)
 	matrixFronteras.append(fronteras)		
-	i = 1
+	cont_front = 1
 	while len(fronteras) != 0:
 		nextFront = []
 		for solP in fronteras:
 			for solQ in solP.setSolDominadas:
 					solQ.numSolDominantes -= 1
 					if solQ.numSolDominantes == 0:
-						solQ.rank = i+1
+						solQ.rank = cont_front+1
 						nextFront.append(solQ)
-		i +=1
+		cont_front +=1
 		fronteras = nextFront
 		matrixFronteras.append(fronteras)
 	return poblacion		
 
-def crowdingDistanceAssignment(L):
+def crowdingDistanceAssignment(frontera):
 	print "Crowded Distance Assignment"
-	l = len(L)
-	for i in L:
-		L.crowdedDistance = 0
-	for x in range(1,):
-		pass
+	largo = len(frontera)
+	for sol in frontera:
+		sol.crowdedDistance = 0
+	for n_obj in range(1,3):
+		frontera = sortCostoAssignacion(frontera, n_obj)
+		frontera[0].crowdedDistance = float('Inf')
+		frontera[largo-1].crowdedDistance = float('Inf')
+		for i in range(1,largo-1):
+			pass
+			#print i,
+			#print n_obj
+			#frontera[i].crowdedDistance += (frontera[i+1].costoFlujo[n_obj] - frontera[i-1].costoFlujo[n_obj])/(frontera[largo-2].costoFlujo[n_obj] - frontera[1].costoFlujo[n_obj])
+
+
+		
 
 def sortRanking(poblacion):
 	for i in range(len(poblacion)-1, -1,-1):
@@ -179,6 +190,7 @@ def sortRanking(poblacion):
 			if s1.rank > s2. rank:
 				poblacion[j-1] = s2
 				poblacion[j] = s1
+	return poblacion
 
 def sortCostoAssignacion(poblacion, objetivo):
 	for i in range(len(poblacion)-1,-1,-1):
@@ -186,13 +198,14 @@ def sortCostoAssignacion(poblacion, objetivo):
 			s1 = poblacion[j-1]
 			s2 = poblacion[j]
 			if objetivo ==1:
-				if s1.costoFlujo1 > s2.costoFlujo1:
+				if s1.costoFlujo[0] > s2.costoFlujo[0]:
 					poblacion[j-1] = s2
 					poblacion[j] = s1
 			elif objetivo ==2:
-				if s1.costoFlujo2 > s2.costoFlujo2:
+				if s1.costoFlujo[1] > s2.costoFlujo[1]:
 					poblacion[j-1] = s2
 					poblacion[j] = s1
+	return poblacion
 
 		
 
@@ -245,7 +258,7 @@ def main():
 	distribuirMatrices(lectura())
 	P = []
 	start = time.time()
-	crearPoblacion(P, 40)
+	crearPoblacion(P, 90)
 	for elem in P:
 		#print elem.solution
 		elem.costoAsignacion()
@@ -263,13 +276,16 @@ def main():
 	#onePointCrossover(P[0],P[1])
 	#onePcrossover(P[0],P[1])
 	fastNonDominatedSort(P)
-	sortRanking(P)
+	#sortRanking(P)
 	#sortCostoAssignacion(P,1)
+	#for x in matrixFronteras:
+	#	crowdingDistanceAssignment(x)
 	for elem in P:
 		#print elem.costoFlujo1,
 		#print elem.costoFlujo2,
 		print elem.solution,
-		print elem.rank
+		print elem.rank,
+		print elem.crowdedDistance
 
 		#for other in P:
 		#	dominance(elem, other)
@@ -279,14 +295,23 @@ def main():
 		#print elem.solution
 		#elem.costoAsignacion()
 		#twOptSearch(elem)
-	end = time.time()
+	
+	#Debugger de crowded distance
 	cont = 1
-	for x in matrixFronteras:
-		print "Frontera: ",
-		print cont
-		for y in x:
-			print y.solution
-		cont+=1	
+	
+
+		
+
+		
+	end = time.time()
+	#Debugger fronteras
+	#cont = 1
+	#for x in matrixFronteras:
+	#	print "Frontera: ",
+	#	print cont
+	#	for y in x:
+	#		print y.solution
+	#	cont+=1	
 
 	print "t = ", end-start
 

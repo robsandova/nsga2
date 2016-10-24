@@ -81,12 +81,8 @@ for x in range(a,c):
 	#print listaCirc.next()
 lista = [2,3,5,6,4,9,8,7,1,0]
 print "Prueba!"
-for x in range(len(lista)-1, -1, -1):
-	print "soy el x:", 
+for x in range(1,3):
 	print x
-	for y in range(1,x+1):
-		print "y yo el y: ",
-		print y
 
 
 

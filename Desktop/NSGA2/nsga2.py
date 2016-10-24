@@ -161,25 +161,31 @@ def fastNonDominatedSort(poblacion):
 						nextFront.append(solQ)
 		cont_front +=1
 		fronteras = nextFront
-		matrixFronteras.append(fronteras)
+		if(fronteras == []):
+			continue
+		else:
+			matrixFronteras.append(fronteras)
 	return poblacion		
 
 def crowdingDistanceAssignment(frontera):
 	print "Crowded Distance Assignment"
 	largo = len(frontera)
 	for sol in frontera:
-		sol.crowdedDistance = 0
-	for n_obj in range(1,3):
+		sol.crowdedDistance = 0.0
+	for n_obj in range(0,2):
 		frontera = sortCostoAssignacion(frontera, n_obj)
 		frontera[0].crowdedDistance = float('Inf')
 		frontera[largo-1].crowdedDistance = float('Inf')
 		for i in range(1,largo-1):
-			pass
-			#print i,
-			#print n_obj
-			#frontera[i].crowdedDistance += (frontera[i+1].costoFlujo[n_obj] - frontera[i-1].costoFlujo[n_obj])/(frontera[largo-2].costoFlujo[n_obj] - frontera[1].costoFlujo[n_obj])
+			frontera[i].crowdedDistance += (frontera[i+1].costoFlujo[n_obj] - frontera[i-1].costoFlujo[n_obj])/(frontera[largo-1].costoFlujo[n_obj] - frontera[0].costoFlujo[n_obj])
 
-
+def crowdedComparisonOperator(sol, otherSol):
+	if(sol.rank < otherSol.rank):
+		return true
+	elif (sol.rank == otherSol.rank and sol.crowdedDistance > otherSol.crowdedDistance):
+		return true
+	else:
+		return false
 		
 
 def sortRanking(poblacion):
@@ -197,11 +203,11 @@ def sortCostoAssignacion(poblacion, objetivo):
 		for j in range(1,i+1):
 			s1 = poblacion[j-1]
 			s2 = poblacion[j]
-			if objetivo ==1:
+			if objetivo ==0:
 				if s1.costoFlujo[0] > s2.costoFlujo[0]:
 					poblacion[j-1] = s2
 					poblacion[j] = s1
-			elif objetivo ==2:
+			elif objetivo ==1:
 				if s1.costoFlujo[1] > s2.costoFlujo[1]:
 					poblacion[j-1] = s2
 					poblacion[j] = s1
@@ -276,10 +282,10 @@ def main():
 	#onePointCrossover(P[0],P[1])
 	#onePcrossover(P[0],P[1])
 	fastNonDominatedSort(P)
-	#sortRanking(P)
+	sortRanking(P)
 	#sortCostoAssignacion(P,1)
-	#for x in matrixFronteras:
-	#	crowdingDistanceAssignment(x)
+	for x in matrixFronteras:
+		crowdingDistanceAssignment(x)
 	for elem in P:
 		#print elem.costoFlujo1,
 		#print elem.costoFlujo2,
@@ -297,7 +303,7 @@ def main():
 		#twOptSearch(elem)
 	
 	#Debugger de crowded distance
-	cont = 1
+	#cont = 1
 	
 
 		

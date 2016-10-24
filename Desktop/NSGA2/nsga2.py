@@ -181,36 +181,36 @@ def crowdingDistanceAssignment(frontera):
 
 def crowdedComparisonOperator(sol, otherSol):
 	if(sol.rank < otherSol.rank):
-		return true
+		return True
 	elif (sol.rank == otherSol.rank and sol.crowdedDistance > otherSol.crowdedDistance):
-		return true
+		return True
 	else:
-		return false
+		return False
 		
 
 def sortRanking(poblacion):
 	for i in range(len(poblacion)-1, -1,-1):
 		for j in range(1,i+1):
-			s1 = poblacion[j-1]
-			s2 = poblacion[j]
-			if s1.rank > s2. rank:
-				poblacion[j-1] = s2
-				poblacion[j] = s1
+			sol1 = poblacion[j-1]
+			sol2 = poblacion[j]
+			if sol1.rank > sol2. rank:
+				poblacion[j-1] = sol2
+				poblacion[j] = sol1
 	return poblacion
 
 def sortCostoAssignacion(poblacion, objetivo):
 	for i in range(len(poblacion)-1,-1,-1):
 		for j in range(1,i+1):
-			s1 = poblacion[j-1]
-			s2 = poblacion[j]
+			sol1 = poblacion[j-1]
+			sol2 = poblacion[j]
 			if objetivo ==0:
-				if s1.costoFlujo[0] > s2.costoFlujo[0]:
-					poblacion[j-1] = s2
-					poblacion[j] = s1
+				if sol1.costoFlujo[0] > sol2.costoFlujo[0]:
+					poblacion[j-1] = sol2
+					poblacion[j] = sol1
 			elif objetivo ==1:
-				if s1.costoFlujo[1] > s2.costoFlujo[1]:
-					poblacion[j-1] = s2
-					poblacion[j] = s1
+				if sol1.costoFlujo[1] > sol2.costoFlujo[1]:
+					poblacion[j-1] = sol2
+					poblacion[j] = sol1
 	return poblacion
 
 		

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import math
 import time, sys, random
 from random import randint
@@ -34,10 +35,10 @@ class Solucion:
 		print "Costo F1: ", self.costoFlujo[0]
 		print "Costo F2: ", self.costoFlujo[1]
 
-#LECTURA DE INSTANCIAS DEL PROBLEMA
+#LECTURA DE INSTANCIAS DEL PROBLEMA UTILES
 def lectura():
 	#archivo = raw_input("Ingrese nombre archivo: ")
-	instancias = open('10.dat', 'r')
+	instancias = open('30.dat', 'r')
 	arreglo = []
 	tamano = instancias.readline()
 	arreglo.append(tamano)
@@ -52,7 +53,7 @@ def lectura():
 				arreglo.append(int(num))
 	return arreglo
 
-#DISTRIBUCION EN MATRICES DE FLUJO Y DISTANCIA	
+#DISTRIBUCION EN MATRICES DE FLUJO Y DISTANCIA, UTILES	
 def distribuirMatrices(arreglo):
 	global numFac
 	numFac = int(arreglo[0])
@@ -70,7 +71,7 @@ def distribuirMatrices(arreglo):
 			matrixFlujoDos.append(arreglo[i])
 		else:
 			pass
-	
+#UTILES
 def imprimeMatriz(arreglo):
 	largo = len(arreglo)
 	ancho = int(math.sqrt(largo))
@@ -80,7 +81,7 @@ def imprimeMatriz(arreglo):
 			print " ",
 		print "\n"
 
-		
+#ALGORITMO		
 def generarSolucionRandom(sol):
 	nFac = sol.numObjetos
 	vectorObjetos = []
@@ -95,7 +96,7 @@ def generarSolucionRandom(sol):
 		vectorObjetos.pop(vectorObjetos.index(obj)), vectorLocalidades.pop(vectorLocalidades.index(loc))
 	return sol
 
-
+#ALGORITMO
 def crearPoblacion(poblacion, tamPoblacion):
 	for x in range(tamPoblacion):
 		if(x==0):
@@ -109,7 +110,7 @@ def crearPoblacion(poblacion, tamPoblacion):
 				generarSolucionRandom(solux)
 			poblacion.append(solux)
 	return poblacion
-
+#ALGORITMO
 def dominance(sol, otherSol):
 	sF1 = sol.costoFlujo[0]
 	sF2 = sol.costoFlujo[1]
@@ -123,7 +124,7 @@ def dominance(sol, otherSol):
 	else:
 		#print False
 		return False
-
+#ALGORITMO
 def strongDominance(sol, otherSol):
 	sF1 = sol.costoFlujo[0]
 	sF2 = sol.costoFlujo[1]
@@ -135,7 +136,7 @@ def strongDominance(sol, otherSol):
 	else:
 		return False
 
-
+#ALGORITMO
 def fastNonDominatedSort(poblacion):
 	fronteras = []
 	for solP in poblacion:
@@ -165,7 +166,7 @@ def fastNonDominatedSort(poblacion):
 			continue
 		else:
 			matrixFronteras.append(fronteras)
-	return poblacion		
+	return fronteras
 
 def crowdingDistanceAssignment(frontera):
 	print "Crowded Distance Assignment"
@@ -174,19 +175,24 @@ def crowdingDistanceAssignment(frontera):
 		sol.crowdedDistance = 0.0
 	for n_obj in range(0,2):
 		frontera = sortCostoAssignacion(frontera, n_obj)
-		frontera[0].crowdedDistance = float('Inf')
-		frontera[largo-1].crowdedDistance = float('Inf')
-		for i in range(1,largo-1):
-			frontera[i].crowdedDistance += (frontera[i+1].costoFlujo[n_obj] - frontera[i-1].costoFlujo[n_obj])/(frontera[largo-1].costoFlujo[n_obj] - frontera[0].costoFlujo[n_obj])
+		if largo == 1:
+			frontera[0].crowdedDistance = 0.0
+		elif largo == 2:
+			frontera[0].crowdedDistance = 2.0
+			frontera[1].crowdedDistance = 2.0	
+		else:
+			frontera[0].crowdedDistance = float('Inf')
+			frontera[largo-1].crowdedDistance = float('Inf')
+			for i in range(1,largo-1):
+				frontera[i].crowdedDistance += (frontera[i+1].costoFlujo[n_obj] - frontera[i-1].costoFlujo[n_obj])/(frontera[largo-1].costoFlujo[n_obj] - frontera[0].costoFlujo[n_obj])
+
 
 def crowdedComparisonOperator(sol, otherSol):
-	if(sol.rank < otherSol.rank):
-		return True
-	elif (sol.rank == otherSol.rank and sol.crowdedDistance > otherSol.crowdedDistance):
-		return True
-	else:
-		return False
-		
+	if (sol.rank < otherSol.rank) or \
+		((sol.rank == otherSol.rank) and (sol.crowdedDistance > otherSol.crowdedDistance)):
+		return 1
+	else: 
+		return -1
 
 def sortRanking(poblacion):
 	for i in range(len(poblacion)-1, -1,-1):
@@ -213,7 +219,15 @@ def sortCostoAssignacion(poblacion, objetivo):
 					poblacion[j] = sol1
 	return poblacion
 
-		
+def sortCrowding(poblacion):
+	for i in range(len(poblacion)-1, -1, -1):
+		for j in range(1,i+1):
+			sol1 = poblacion[j-1]
+			sol2 = poblacion[j-2]
+			if (crowdedComparisonOperator(sol1, sol2) < 0):
+				poblacion[j-1] = sol2
+				poblacion[j] = sol1
+	return poblacion
 
 def onePointCrossover(sol,other):
 	print "One Point Crossover beggining"
@@ -261,16 +275,13 @@ def twOptSearch(sol):
 
 	
 def main():
+	start = time.time()
 	distribuirMatrices(lectura())
 	P = []
-	start = time.time()
-	crearPoblacion(P, 90)
+	crearPoblacion(P, 70)
 	for elem in P:
 		#print elem.solution
 		elem.costoAsignacion()
-
-		
-
 	#cont = 0
 	#print P[0].solution
 	#print P[1].solution
@@ -287,28 +298,9 @@ def main():
 	for x in matrixFronteras:
 		crowdingDistanceAssignment(x)
 	for elem in P:
-		#print elem.costoFlujo1,
-		#print elem.costoFlujo2,
 		print elem.solution,
 		print elem.rank,
 		print elem.crowdedDistance
-
-		#for other in P:
-		#	dominance(elem, other)
-		#print elem.rank
-		#pass
-		#elem.dominancia(P[cont], P[cont+1])
-		#print elem.solution
-		#elem.costoAsignacion()
-		#twOptSearch(elem)
-	
-	#Debugger de crowded distance
-	#cont = 1
-	
-
-		
-
-		
 	end = time.time()
 	#Debugger fronteras
 	#cont = 1
@@ -318,7 +310,6 @@ def main():
 	#	for y in x:
 	#		print y.solution
 	#	cont+=1	
-
 	print "t = ", end-start
 
 if __name__ == '__main__':

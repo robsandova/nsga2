@@ -65,6 +65,7 @@ lista3 = [2,3,5,6,4,9,8,7,1,0]
 P.append(lista)
 P.append(lista2)
 P.append(lista3)
+del P[:]
 
 listaCirc = itertools.cycle(lista)
 a = randint(0, numFac-1)
@@ -85,71 +86,34 @@ for x in range(1,3):
 	print x
 
 
-
-
-
-def onePointCrossover():
-	numFac = 10
-	lista1 = [9,5,2,4,8,7,0,1,3,6]
-	lista2 = [0,2,6,7,4,5,3,1,8,9]
-	child, posRestringidas, posLibres, objPendiente  = [], [], [], []
-	rangoA,rangoB = randint(0, numFac-1), randint(2, numFac-2)
-	rangoC = rangoA+rangoB
-	print lista1
-	print lista2
-	print "rA: ", rangoA,
-	print "rB: ", rangoB,
-	print "rC: ", rangoC
-	for x in range(rangoA,rangoC):
-		indice = x%numFac
-		elemento = lista1[indice]
-		child.insert(indice, elemento)
-		posRestringidas.append(indice)
-	#print child
-	#print posRestringidas
-	for x in range(len(lista1)):
-		if x not in posRestringidas:
-			posLibres.append(x)
-	#print "pos libres: ", posLibres
-	for x in range(numFac):
-		elem = lista2[x]
-		if elem in child:
-			continue
-		else:
-			objPendiente.insert(x, elem)
-	cont = 0
-	for x in posLibres:
-		child.insert(x,objPendiente[cont])
-		cont +=1
-	print "child: ", 
-	print child
-	return child
-
-
-#onePointCrossover()	
-
-
-
-
-	#	if( rangoA <= x <= rangoC):
-	#		child.insert(x, sol.solution[x])
-	#		posRestringidas.append(x)
-	#	else:
-	#		posLibres.append(x)
-	#print "pos restringidas: ", posRestringidas
-	#print "pos libres: ", posLibres
-	#for x in range(numFac):
-	#	elemento = other.solution[x]
-	#	if (elemento in child):
-	#		continue
-	#	else:
-	#		objPendiente.insert(x,elemento)
-	#cont = 0
-	#for x in posLibres:
-	#	child.insert(x, objPendiente[cont])
-	#	cont += 1
-		
-	#print "Child: ",
-	#print child
-	#return child
-
+#DEBUGGER MAIN.PY
+#	220
+#	P = []
+#	matrixFronteras = []
+#	funciones.crearPoblacion(P,5, numFac)
+#	print "Soluciones P"
+#	for elem in P:
+#		print elem.solution
+#		elem.costoAsignacion()
+#
+#	nsga2 = NSGA2(2,0.1,1.0)
+#	matrixFrontera = nsga2.fastNonDominatedSort(P, matrixFronteras)
+#	nsga2.sortRanking(P)
+##	Q = nsga2.make_new_pob(P)
+#	print "soluciones Q"
+#	
+#	for elemn in Q:
+#		print elemn.solution
+#		elemn.costoAsignacion()
+#	nsga2.fastNonDominatedSort(Q, matrixFrontera)
+#	nsga2.sortRanking(P)
+#	nsga2.sortRanking(Q)
+##	for elem in matrixFrontera:
+#		nsga2.crowdingDistanceAssignment(elem)
+#	print "prueba fpr real"
+#	for elem in Q:
+#		print elem.solution,
+#		print elem.rank,
+##		print elem.crowdedDistance
+#
+#	end = time.time()

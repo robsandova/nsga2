@@ -4,6 +4,8 @@ from nsga2func import NSGA2
 import math
 import time, sys, random
 from random import randint
+import numpy as np
+import matplotlib.pyplot as plt
 
 global matrixDistancia, matrixFlujoUno, matrixFlujoDos
 global numFac
@@ -25,7 +27,8 @@ def main():
 
 	#nsga2.sortCrowding(P)
 
-	nsga2.runAlgorithm(P,50,40)
+	pob = nsga2.runAlgorithm(P,50,40)
+	funciones.graficarPob(pob)
 	end = time.time()
 	print "T =", end-start
 

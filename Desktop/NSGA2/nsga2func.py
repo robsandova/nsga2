@@ -1,5 +1,7 @@
 import funciones
 import random
+import numpy as np
+import matplotlib.pyplot as plt
 
 class Solucion:
 
@@ -16,7 +18,6 @@ class Solucion:
 		self.crowdedDistance = 0.0
 
 	def costoAsignacion(self):
-		print "Calculando "
 		self.costoFlujo[0] = 0.0
 		self.costoFlujo[1]= 0.0
 		for i in range(self.numFacilities):
@@ -43,7 +44,8 @@ class NSGA2:
 			sol.costoAsignacion()
 		for i in range(1,generaciones+1):
 			print "+++++++++++++++++++"
-			print "Iteracion: ", i
+			print "Iteracion: ", i,
+			print "de un total de ", generaciones
 			print "+++++++++++++++++++"
 			pobCombinada = []
 			pobCombinada.extend(poblacion)
@@ -69,14 +71,15 @@ class NSGA2:
 
 			nombreArchivo = "generaciones_0" + str(i) +".csv"
 			nArchivo = open(nombreArchivo, 'w' )
-			
 			for i in range(len(poblacion)):
 				nArchivo.write("" +str(poblacion[i].solution)+ ", " + str(poblacion[i].costoFlujo[0]) + ", " + str(poblacion[i].costoFlujo[1]) + ", " + str(poblacion[i].rank) + "\n")
 
-			if i == generaciones:
-				continue
-			else:
+			if i == generaciones-1:
+				funciones.graficarPob(poblacion)
+			else:	
 				nextPobla = self.makeNewPob(poblacion)
+		return poblacion
+		 		
 
 
 	def sortRanking(self, poblacion):
@@ -202,7 +205,7 @@ class NSGA2:
 		
 
 	def onePointCrossover(self,sol,other):
-		print "One Point Crossover beggining"
+		#print "One Point Crossover beggining"
 		numFac = sol.numFacilities
 		child = Solucion(numFac)
 		posRestringidas, posLibres, objPendiente  = [], [], []
@@ -228,7 +231,7 @@ class NSGA2:
 			cont +=1
 		#print "child: ", 
 		#print child
-		print "One Point Crossover Finished"
+		#print "One Point Crossover Finished"
 		return child
 
 
@@ -238,15 +241,15 @@ class NSGA2:
 		posicionDos = random.randint(0,numFac-1)
 		while posicionUno == posicionDos:
 			posicionDos = random.randint(0,numFac-1)
-		print "posiciones: ", 
-		print posicionUno, 
-		print posicionDos
+		#print "posiciones: ", 
+		#print posicionUno, 
+		#print posicionDos
 		elementoPosUno = sol.solution[posicionUno]
 		elementoPosDos = sol.solution[posicionDos]
 		a, b = sol.solution.index(elementoPosUno), sol.solution.index(elementoPosDos)
 		sol.solution[b], sol.solution[a] = sol.solution[a], sol.solution[b]
-		print "Solucion con cambio: ", 
-		print sol.solution
+		#print "Solucion con cambio: ", 
+		#print sol.solution
 		return sol
 
 	def binaryTournament(poblacion):
@@ -256,6 +259,9 @@ class NSGA2:
 			if (best is None) or self.crowdedComparisonOperator(solParticipante, best) == 1:
 				best = solParticipante
 		return best
+
+
+
 
 def crowdedComparisonOperator(sol, otherSol):
 	if (sol.rank < otherSol.rank) or \

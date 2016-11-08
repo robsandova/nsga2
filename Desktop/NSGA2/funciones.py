@@ -1,12 +1,15 @@
 from nsga2func import Solucion
 from nsga2func import NSGA2
 import random
+import numpy as np
+import matplotlib.pyplot as plt
 
 global matrixDistancia, matrixFlujoUno, matrixFlujoDos
 global numFac
 matrixDistancia = []
 matrixFlujoUno = []
 matrixFlujoDos = []
+
 
 
 def lectura():
@@ -108,4 +111,16 @@ def strongDominance(sol, otherSol):
 		return True
 	else:
 		return False
+
+def graficarPob(poblacion):
+	listaSolC1, listaSolC2 = [], []
+	for elem in poblacion:
+		elem.costoAsignacion()
+		listaSolC1.append(elem.costoFlujo[0])
+		listaSolC2.append(elem.costoFlujo[1])
+	plt.plot(listaSolC1, listaSolC2, 'ro')
+	plt.ylabel('Costo Flujo 2')
+	plt.xlabel('Costo Flujo 1')
+	plt.show()
+	return 1
 

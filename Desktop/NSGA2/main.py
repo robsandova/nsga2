@@ -20,17 +20,20 @@ def main():
 	start = time.time()
 	nsga2 = NSGA2(2, 0.3, 1.0)
 	P = []
-	funciones.crearPoblacion(P,20, numFac)
+	funciones.crearPoblacion(P,25, numFac)
 	front = nsga2.fastNonDominatedSort(P)
 	#for fron in front:
 	#	nsga2.crowdingDistanceAssignment(fron)
 
 	#nsga2.sortCrowding(P)
 
-	pob = nsga2.runAlgorithm(P,50,40)
-	funciones.graficarPob(pob)
+	pob = nsga2.runAlgorithm(P,25,25)
 	end = time.time()
 	print "T =", end-start
+	funciones.graficarPob(pob)
+	
+
 
 if __name__ == '__main__':
 	main()
+

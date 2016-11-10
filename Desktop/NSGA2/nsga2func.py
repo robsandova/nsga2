@@ -52,7 +52,7 @@ class NSGA2:
 			pobCombinada.extend(nextPobla)
 
 			fronteras = self.fastNonDominatedSort(pobCombinada)
-			print "la cantidad de fronteras es: ", len(fronteras)
+			#print "la cantidad de fronteras es: ", len(fronteras)
 
 			del poblacion[:]
 
@@ -74,9 +74,12 @@ class NSGA2:
 			for i in range(len(poblacion)):
 				nArchivo.write("" +str(poblacion[i].solution)+ ", " + str(poblacion[i].costoFlujo[0]) + ", " + str(poblacion[i].costoFlujo[1]) + ", " + str(poblacion[i].rank) + "\n")
 
-			if i == generaciones-1:
+			if i == 1:
 				funciones.graficarPob(poblacion)
-			else:	
+			if i == generaciones:
+				break
+				#funciones.graficarPob(poblacion)
+			else:
 				nextPobla = self.makeNewPob(poblacion)
 		return poblacion
 		 		

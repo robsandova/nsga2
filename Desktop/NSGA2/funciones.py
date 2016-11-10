@@ -115,9 +115,10 @@ def strongDominance(sol, otherSol):
 def graficarPob(poblacion):
 	listaSolC1, listaSolC2 = [], []
 	for elem in poblacion:
-		elem.costoAsignacion()
-		listaSolC1.append(elem.costoFlujo[0])
-		listaSolC2.append(elem.costoFlujo[1])
+		if elem.rank == 1:
+			#elem.costoAsignacion()
+			listaSolC1.append(elem.costoFlujo[0])
+			listaSolC2.append(elem.costoFlujo[1])
 	plt.plot(listaSolC1, listaSolC2, 'ro')
 	plt.ylabel('Costo Flujo 2')
 	plt.xlabel('Costo Flujo 1')
